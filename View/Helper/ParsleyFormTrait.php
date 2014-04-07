@@ -1,4 +1,15 @@
 <?php
+/**
+ * Licensed under The MIT License
+ * For full copyright and license information, please see the LICENSE.txt
+ * Redistributions of files must retain the above copyright notice.
+ *
+ * @copyright     Copyright (c) Codaxis (http://codaxis.com)
+ * @author        augusto-cdxs (https://github.com/augusto-cdxs/
+ * @link          https://github.com/Codaxis/parsley-helper ParsleyHelper
+ * @package       ParsleyHelper.View.Helper
+ * @license       http://www.opensource.org/licenses/mit-license.php MIT License
+ */
 
 App::uses('ParsleyProcessor', 'ParsleyHelper.Lib');
 
