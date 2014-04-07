@@ -23,4 +23,4 @@ before_script:
     }" > ../cakephp/app/Config/database.php
  
 script:
-  - ./lib/Cake/Console/cake test ParsleyHelper View/Helper/ParsleyFormHelper --stderr
+  - ./lib/Cake/Console/cake test ParsleyHelper AllParsley --stderr
