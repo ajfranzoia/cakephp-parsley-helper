@@ -23,7 +23,7 @@
  *
  * @package       Cake.Test.Case
  */
-class AllTests extends PHPUnit_Framework_TestSuite {
+class AllTestsTest extends PHPUnit_Framework_TestSuite {
 
 /**
  * Suite define the tests for this suite
@@ -32,14 +32,11 @@ class AllTests extends PHPUnit_Framework_TestSuite {
  */
 	public static function suite() {
 		$suite = new CakeTestSuite('All Parsley tests');
-
 		$path = CakePlugin::path('ParsleyHelper') . 'Test' . DS . 'Case' . DS . 'View' . DS . 'Helper' . DS;
-
 		$suite->addTestFile($path . 'ParsleyFormHelperTest.php');
 		if (version_compare(PHP_VERSION, '5.4', '>=')) {
 			$suite->addTestFile($path . 'ParsleyFormTraitTest.php');
 		}
-
 		return $suite;
 	}
 }
