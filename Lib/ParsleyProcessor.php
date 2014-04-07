@@ -1,39 +1,53 @@
 <?php
 
-class ParsleyProcessor implements CakeEventListener {
+class ParsleyProcessor {
 
 /**
+ * Parsley state on current form
+ *
  * @var boolean
  */
     protected $_enabled = false;
 
 /**
- * @var boolean
+ * Namespace
+ *
+ * @var string
  */
     protected $_namespace = null;
 
 /**
+ * Priority enabled
+ *
  * @var boolean
  */
     protected $_priorityEnabled = null;
 
 /**
- * @var boolean
+ * Excluded fields from validation
+ *
+ * @var string
  */
     protected $_excluded = null;
-    
-    public function implementedEvents() {
-        return array(
-            'FormHelper.beforeFormCreate' => 'initialize',
-            'FormHelper.afterInitInput' => 'processInput',
-        );
-    }
 
-    public function initialize($event) {
-        $FormHelper = $event->subject();
+/**
+ * Current form model
+ *
+ * @var object
+ */
+    protected $_model = null;
 
-        $options = $event->data['options'];
-        
+/**
+ * Checks if Parsley is enabled and initializes current form options.
+ * Return array with options for Form::create().
+ *
+ * @param string $model
+ * @param array $options
+ * @return array
+ */
+    public function initialize($model, $options) {
+        $this->_model  = $model;
+
         $shortcut = $this->_extractOption('parsley', $options);
         $attr = $this->_extractOption('data-parsley-validate', $options);
         $enabled = !empty($attr);
@@ -43,11 +57,10 @@ class ParsleyProcessor implements CakeEventListener {
             if (!is_array($shortcut)) {
                 $shortcut = array();
             }
-                
-            $options['data-parsley-error-class'] = $this->_extractOption('errorClass', $shortcut, 'has-error');
-            $options['data-parsley-success-class'] = $this->_extractOption('successClass', $shortcut, 'has-success');
-            $options['data-parsley-errors-wrapper'] = $this->_extractOption('errorsWrapper', $shortcut, '<ul class="error-list help-block"></ul>');
-            
+            $options['data-parsley-error-class'] = $this->_extractOption('data-parsley-namespace', $options);
+            $options['data-parsley-error-class'] = $this->_extractOption('errorClass', $shortcut);
+            $options['data-parsley-success-class'] = $this->_extractOption('successClass', $shortcut);
+            $options['data-parsley-errors-wrapper'] = $this->_extractOption('errorsWrapper', $shortcut);
             $options['data-parsley-validate'] = true;
             $enabled = true;
         }
@@ -57,40 +70,63 @@ class ParsleyProcessor implements CakeEventListener {
             $this->_enabled = true;
             $options['novalidate'] = true;
             $this->_namespace = $this->_extractOption('data-parsley-namespace', $options, 'data-parsley');
-            $this->_priorityEnabled = $this->_extractOption('data-parsley-priority-enabled', $options, null);
-            $this->_excluded = $this->_extractOption('data-parsley-excluded', $options, null);
+            $this->_priorityEnabled = $this->_extractOption('data-parsley-priority-enabled', $options);
+            $this->_excluded = $this->_extractOption('data-parsley-excluded', $options);
         }
-        
-        $event->data['options'] = $options;
+        return $options;
     }
     
-    public function processInput($event) {
+/**
+ * Processes input field and adds attributes according to set validation rules.
+ * Return array with processed attributes.
+ *
+ * @param string $field
+ * @param array $options
+ * @param boolean $isUpdate
+ * @return array
+ */
+    public function processInput($field, $options, $isUpdate) {
         if ($this->_enabled) {
-            $this->_isUpdate = $event->subject()->requestType === 'put';
-            if (empty($event->data['model']) || empty($event->data['field'])) {
-                return;
+            $this->_isUpdate = $isUpdate;
+            if (empty($this->_model)) {
+                return $options;
             }
             
-            $field = $event->data['field'];
-            $validator = $event->data['model']->validator();
+            $validator = $this->_model->validator();
             if (!isset($validator[$field])) {
-                return ;
+                return $options;
             }
             $rules = $validator[$field];
             
-            $result = $this->_applyParsley($field, $rules, $event->data['result'], $event->data['model']->validationDomain);
-            $event->data['result'] = $result;
+            $result = $this->_applyParsley($field, $rules, $options);
+            return $result;
         }
+        return $options;
     }
 
 /**
- * Adds Parsley data attributes to field options if Parsley is enabled
+ * Adds data-parsley-multiple attribute to date/time inputs.
  * 
- * @param string $field Name of the field to initialize options for.
- * @param array $options Array of options to append options into.
- * @return array Array of options for the input.
+ * @param string $fieldName
+ * @param array $attributes
+ * @return string
  */
-    protected function _applyParsley($field, $rules, $options = array(), $validationDomain) {
+    public function processDatetimeInput($fieldName, $attributes) {
+        if ($this->_enabled) {
+            $attributes[$this->_namespace . '-multiple'] = strtolower(Inflector::slug($this->_model->name . ' ' . $fieldName));
+        }
+        return $attributes;
+    }
+
+/**
+ * Inspects field rules and adds proper Parsley attributes.
+ * 
+ * @param string $field
+ * @param array $rules
+ * @param array $options
+ * @return array
+ */
+    protected function _applyParsley($field, $rules, $options = array()) {
         $parsleyRules = array();
         if ($this->_isRequiredField($rules)) {
             $parsleyRule = $this->_addRequiredValidation(null, $options);
@@ -98,36 +134,33 @@ class ParsleyProcessor implements CakeEventListener {
             $parsleyRules[] = $parsleyRule;
         }
         
-        foreach ($rules as $rule) {
+        foreach ($rules as $name => $rule) {
             $rule->rule = (array) $rule->rule;
             $ruleName = $rule->rule[0];
             
             $methodName = '_add' . ucfirst($ruleName) . 'Validation';
             if (method_exists($this, $methodName)) {
                 $parsleyRule = $this->$methodName($rule, $options);
-                $parsleyRule['message'] = isset($rule->message) ? $rule->message : $ruleName;
+                $parsleyRule['message'] = $this->_getValidationMessage($name, $rule);
                 $parsleyRules[] = $parsleyRule;
             }
         }
         
         foreach ($parsleyRules as $rule) {
             $attr = $this->_namespace . '-' . $rule['rule'];
-            $options[$attr] = $rule['value'];
-            
-            $message = $originalMessage = $rule['message'];
-            if ($validationDomain != null) {
-                $message = __d($model->validationDomain, $message);
-            }
-            if (empty($model->validationDomain) || $message == $originalMessage) {
-                $message = __($message);
-            }
-            
-            $options[$attr . '-message'] = $message;
+            $options[$attr] = $rule['value'];            
+            $options[$attr . '-message'] = $rule['message'];
         }
         
         return $options;
     }
 
+/**
+ * Adds required validation.
+ * 
+ * @param object $rule
+ * @return array
+ */
     public function _addRequiredValidation($rule) {
         return array(
             'rule' => 'required',
@@ -135,18 +168,36 @@ class ParsleyProcessor implements CakeEventListener {
         );
     }
 
+/**
+ * Adds not empty validation.
+ * 
+ * @param object $rule
+ * @return array
+ */
     public function _addNotEmptyValidation($rule) {
         return $this->_addRequiredValidation($rule);
     }
     
+/**
+ * Adds alphanumeric validation.
+ * 
+ * @param object $rule
+ * @return array
+ */
     public function _addAlphaNumericValidation($rule) {
         return array(
             'rule' => 'type',
             'value' => 'alphanum',
         );
     }
-    
-    public function _addDecimalValidation($rule) {
+     
+/**
+ * Adds decimal validation.
+ * 
+ * @param object $rule
+ * @return array
+ */
+   public function _addDecimalValidation($rule) {
         $places = isset($rule->rule[1]) ? $rule->rule[1] : null;
         $regex = isset($rule->rule[2]) ? $rule->rule[2] : null;
         
@@ -178,6 +229,12 @@ class ParsleyProcessor implements CakeEventListener {
         );
     }
     
+/**
+ * Adds between validation.
+ * 
+ * @param object $rule
+ * @return array
+ */
     public function _addBetweenValidation($rule) {
         return array(
             'rule' => 'length',
@@ -185,6 +242,12 @@ class ParsleyProcessor implements CakeEventListener {
         );
     }
     
+/**
+ * Adds blank validation.
+ * 
+ * @param object $rule
+ * @return array
+ */
     public function _addBlankValidation($rule) {
         return array(
             'rule' => 'pattern',
@@ -192,6 +255,12 @@ class ParsleyProcessor implements CakeEventListener {
         );
     }
     
+/**
+ * Adds boolean validation.
+ * 
+ * @param object $rule
+ * @return array
+ */
     public function _addBooleanValidation($rule) {
         return array(
             'rule' => 'pattern',
@@ -199,6 +268,12 @@ class ParsleyProcessor implements CakeEventListener {
         );
     }
     
+/**
+ * Adds comparison validation.
+ * 
+ * @param object $rule
+ * @return array
+ */
     public function _addComparisonValidation($rule) {
         $operator = $rule->rule[1];
         $check2 = $rule->rule[2];
@@ -242,6 +317,12 @@ class ParsleyProcessor implements CakeEventListener {
         );
     }
     
+/**
+ * Adds equal to validation.
+ * 
+ * @param object $rule
+ * @return array
+ */
     public function _addEqualToValidation($rule) {
         return array(
             'rule' => 'pattern',
@@ -249,6 +330,12 @@ class ParsleyProcessor implements CakeEventListener {
         );
     }
     
+/**
+ * Adds compare fields validation.
+ * 
+ * @param object $rule
+ * @return array
+ */
     public function _addCompareFieldsValidation($rule) {
         return array(
             'rule' => 'equalto',
@@ -256,12 +343,25 @@ class ParsleyProcessor implements CakeEventListener {
         );
     }
     
+/**
+ * Adds custom regex validation.
+ * 
+ * @param object $rule
+ * @return array
+ */
     public function _addCustomValidation($rule) {
         return array(
             'rule' => 'pattern',
             'value' => $rule->rule[1],
         );
     }
+
+/**
+ * Adds date validation.
+ * 
+ * @param object $rule
+ * @return array
+ */
     public function _addDateValidation($rule) {
         $format = empty($rule->rule[1]) ? 'ymd' : $rule->rule[1];
         return array(
@@ -270,6 +370,12 @@ class ParsleyProcessor implements CakeEventListener {
         );
     }
     
+/**
+ * Adds time validation.
+ * 
+ * @param object $rule
+ * @return array
+ */
     public function _addTimeValidation($rule) {
         return array(
             'rule' => 'pattern',
@@ -278,6 +384,12 @@ class ParsleyProcessor implements CakeEventListener {
         
     }
 
+/**
+ * Adds datetime validation.
+ * 
+ * @param object $rule
+ * @return array
+ */
     public function _addDatetimeValidation($rule) {
         $timeRegex = '(((0?[1-9]|1[012])(:[0-5]\d){0,2} ?([AP]M|[ap]m))|([01]\d|2[0-3])(:[0-5]\d){0,2})';
         $format = empty($rule->rule[1]) ? 'ymd' : $rule->rule[1];
@@ -288,6 +400,12 @@ class ParsleyProcessor implements CakeEventListener {
         
     }
     
+/**
+ * Adds email validation.
+ * 
+ * @param object $rule
+ * @return array
+ */
     public function _addEmailValidation($rule) {
         return array(
             'rule' => 'type',
@@ -295,6 +413,12 @@ class ParsleyProcessor implements CakeEventListener {
         );
     }
     
+/**
+ * Adds ip validation.
+ * 
+ * @param object $rule
+ * @return array
+ */
     public function _addIpValidation($rule) {
         $type = isset($rule->rule[1]) ? $rule->rule[1] : 'both';
         $ipv4Regex = '((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)';
@@ -312,6 +436,12 @@ class ParsleyProcessor implements CakeEventListener {
         );
     }
 
+/**
+ * Adds money validation.
+ * 
+ * @param object $rule
+ * @return array
+ */
     public function _addMoneyValidation($rule) {
         $symbolPosition = isset($rule->rule[1]) ? $rule->rule[1] : 'left';
         $money = '(?!0,?\d)(?:\d{1,3}(?:([, .])\d{3})?(?:\1\d{3})*|(?:\d+))((?!\1)[,.]\d{1,2})?';
@@ -327,6 +457,12 @@ class ParsleyProcessor implements CakeEventListener {
         );
     }
     
+/**
+ * Adds max length validation.
+ * 
+ * @param object $rule
+ * @return array
+ */
     public function _addMaxLengthValidation($rule) {
         return array(
             'rule' => 'maxlength',
@@ -334,6 +470,12 @@ class ParsleyProcessor implements CakeEventListener {
         );
     }
     
+/**
+ * Adds required validation.
+ * 
+ * @param object $rule
+ * @return array
+ */
     public function _addMinLengthValidation($rule) {
         return array(
             'rule' => 'minlength',
@@ -341,6 +483,12 @@ class ParsleyProcessor implements CakeEventListener {
         );
     }
     
+/**
+ * Adds phone number validation.
+ * 
+ * @param object $rule
+ * @return array
+ */
     public function _addPhoneValidation($rule) {
         $regex = empty($rule->rule[1]) ? null : $rule->rule[1];
         $country = empty($rule->rule[2]) ? 'all' : $rule->rule[2];
@@ -378,6 +526,12 @@ class ParsleyProcessor implements CakeEventListener {
         );
     }
     
+/**
+ * Adds postal code validation.
+ * 
+ * @param object $rule
+ * @return array
+ */
     public function _addPostalValidation($rule) {
         $regex = empty($rule->rule[1]) ? null : $rule->rule[1];
         $country = empty($rule->rule[2]) ? 'us' : $rule->rule[2];
@@ -411,6 +565,12 @@ class ParsleyProcessor implements CakeEventListener {
         );
     }
     
+/**
+ * Adds range validation.
+ * 
+ * @param object $rule
+ * @return array
+ */
     public function _addRangeValidation($rule) {
         return array(
             'rule' => 'range',
@@ -418,6 +578,12 @@ class ParsleyProcessor implements CakeEventListener {
         );
     }
     
+/**
+ * Adds ssn validation.
+ * 
+ * @param object $rule
+ * @return array
+ */
     public function _addSsnValidation($rule) {
         $regex = $rule->rule[1];
         $country = $rule->rule[2];
@@ -442,6 +608,12 @@ class ParsleyProcessor implements CakeEventListener {
         );
     }
     
+/**
+ * Adds url validation.
+ * 
+ * @param object $rule
+ * @return array
+ */
     public function _addUrlValidation($rule) {
         return array(
             'rule' => 'type',
@@ -449,6 +621,12 @@ class ParsleyProcessor implements CakeEventListener {
         );
     }
     
+/**
+ * Adds numeric validation.
+ * 
+ * @param object $rule
+ * @return array
+ */
     public function _addNumericValidation($rule) {
         return array(
             'rule' => 'type',
@@ -456,6 +634,12 @@ class ParsleyProcessor implements CakeEventListener {
         );
     }
     
+/**
+ * Adds natural number validation.
+ * 
+ * @param object $rule
+ * @return array
+ */
     public function _addNaturalNumberValidation($rule) {
         $allowZero = isset($rule->rule[1]) ? $rule->rule[1] : false;
         return array(
@@ -464,6 +648,12 @@ class ParsleyProcessor implements CakeEventListener {
         );
     }
     
+/**
+ * Adds uuid validation.
+ * 
+ * @param object $rule
+ * @return array
+ */
     public function _addUuidValidation($rule) {
         $regex = '^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[0-5][a-fA-F0-9]{3}-[089aAbB][a-fA-F0-9]{3}-[a-fA-F0-9]{12}$';
         return array(
@@ -472,6 +662,12 @@ class ParsleyProcessor implements CakeEventListener {
         );
     }
 
+/**
+ * Returns date regex based on format.
+ * 
+ * @param string $format
+ * @return string
+ */
     public function _getDateRegex($format) {
         $month = '(0[123456789]|10|11|12)';
         $separator = '([- /.])';
@@ -507,10 +703,61 @@ class ParsleyProcessor implements CakeEventListener {
     }
 
 /**
- * Returns if a field is required to be filled based on validation properties from the validating object.
+ * Returns rule validation message.
+ * 
+ * @param string $name
+ * @param object $rule
+ * @return string
+ */
+    protected function _getValidationMessage($name, $rule) {
+        $validationDomain = $this->_model->validationDomain;
+        $message = $rule->message;
+
+        if ($message !== null) {
+            $args = null;
+            if (is_array($message)) {
+                $result = $message[0];
+                $args = array_slice($message, 1);
+            } else {
+                $result = $message;
+            }
+            if (is_array($rule->rule) && $args === null) {
+                $args = array_slice($rule->rule, 1);
+            }
+
+            foreach ((array)$args as $k => $arg) {
+                if (is_string($arg)) {
+                    $args[$k] = __d($validationDomain, $arg);
+                }
+            }
+
+            $message = __d($validationDomain, $result, $args);
+        } elseif (is_string($name)) {
+            if (is_array($rule->rule)) {
+                $args = array_slice($rule->rule, 1);
+
+                foreach ((array)$args as $k => $arg) {
+                    if (is_string($arg)) {
+                        $args[$k] = __d($validationDomain, $arg);
+                    }
+                }
+
+                $message = __d($validationDomain, $name, $args);
+            } else {
+                $message = __d($validationDomain, $name);
+            }
+        } else {
+            $message = __d('cake', 'This field cannot be left blank');
+        }
+
+        return $message;
+    }
+
+/**
+ * Returns if a field is required.
  *
  * @param CakeValidationSet $validationRules
- * @return boolean true if field is required to be filled, false otherwise
+ * @return boolean
  */
     protected function _isRequiredField($validationRules) {
         if (empty($validationRules) || count($validationRules) === 0) {
@@ -531,10 +778,10 @@ class ParsleyProcessor implements CakeEventListener {
 /**
  * Extracts a single option from an options array.
  *
- * @param string $name The name of the option to pull out.
- * @param array $options The array of options you want to extract.
- * @param mixed $default The default option value
- * @return mixed the contents of the option or default
+ * @param string $name
+ * @param array $options
+ * @param mixed $default
+ * @return mixed
  */
     protected function _extractOption($name, $options, $default = null) {
         if (array_key_exists($name, $options)) {

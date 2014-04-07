@@ -1,25 +1,9 @@
 <?php
 
-App::uses('FormHelper', 'View/Helper');
-App::uses('Set', 'Utility');
 App::uses('ParsleyProcessor', 'ParsleyJsHelper.Lib');
 
-class ParsleyFormHelper extends FormHelper {
-
-/**
- * @var array
- */
-    public $helpers = array(
-        'Html'
-    );
-
-/**
- * ParsleyProcessor object
- * 
- * @var object
- */
-    protected $_processor = null;
- 
+trait ParsleyFormTrait {
+    
 /**
  * Runs ParsleyProcessor initialize method with current form.
  * 

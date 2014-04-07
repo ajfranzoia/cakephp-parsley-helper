@@ -1,0 +1,2 @@
+msgid "Not localized error message."
+msgstr "Localized error message."
