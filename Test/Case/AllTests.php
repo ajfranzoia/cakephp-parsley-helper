@@ -23,7 +23,7 @@
  *
  * @package       Cake.Test.Case
  */
-class AllParsleyTest extends PHPUnit_Framework_TestSuite {
+class AllTests extends PHPUnit_Framework_TestSuite {
 
 /**
  * Suite define the tests for this suite

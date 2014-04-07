@@ -5,11 +5,15 @@ php:
   - 5.4
   - 5.5
 
+env:
+  - CAKE_VERSION=master
+  - CAKE_VERSION=2.5
+
 before_script:
-  - git clone git://github.com/Codaxis/parsley-helper ../cakephp && cd ../cakephp
-  - mv ../parsley-helper plugins/ParsleyHelper
-  - chmod -R 777 ../cakephp/app/tmp
   - sh -c "mysql -e 'CREATE DATABASE cakephp_test;'"
+  - git clone git://github.com/cakephp/cakephp ../cakephp && cd ../cakephp && git checkout $CAKE_VERSION
+  - cp -R ../parsley-helper plugins/ParsleyHelper
+  - chmod -R 777 ../cakephp/app/tmp
   - echo "<?php
     class DATABASE_CONFIG {
     public \$test = array(
@@ -17,10 +21,12 @@ before_script:
       'database' => 'cakephp_test',
       'host' => '0.0.0.0',
       'login' => 'travis',
-      'host' => '',
       'persistent' => false,
     );
     }" > ../cakephp/app/Config/database.php
- 
+
 script:
-  - ./lib/Cake/Console/cake test ParsleyHelper AllParsley --stderr
+  - ./lib/Cake/Console/cake test ParsleyHelper AllTests --stderr
+
+notifications:
+  email: false
