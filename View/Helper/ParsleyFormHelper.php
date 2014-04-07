@@ -2,7 +2,7 @@
 
 App::uses('FormHelper', 'View/Helper');
 App::uses('Set', 'Utility');
-App::uses('ParsleyProcessor', 'ParsleyJsHelper.Lib');
+App::uses('ParsleyProcessor', 'ParsleyHelper.Lib');
 
 class ParsleyFormHelper extends FormHelper {
 

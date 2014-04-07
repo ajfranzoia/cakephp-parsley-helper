@@ -24,7 +24,7 @@ App::uses('Model', 'Model');
 App::uses('FormHelper', 'View/Helper');
 App::uses('HtmlHelper', 'View/Helper');
 
-App::uses('ParsleyFormHelper', 'ParsleyJsHelper.View/Helper');
+App::uses('ParsleyFormHelper', 'ParsleyHelper.View/Helper');
 
 
 /**
@@ -1028,7 +1028,7 @@ class ParsleyFormHelperTest extends CakeTestCase {
     public function testMessageTranslation() {
         Configure::write('Config.language', 'lang');
         App::build(array(
-            'Locale' => array(CakePlugin::path('ParsleyJsHelper') . 'Test' . DS . 'test_files' . DS . 'Locale' . DS)
+            'Locale' => array(CakePlugin::path('ParsleyHelper') . 'Test' . DS . 'test_files' . DS . 'Locale' . DS)
         ));
 
         $this->Form->create('Contact', array(
@@ -1057,7 +1057,7 @@ class ParsleyFormHelperTest extends CakeTestCase {
     public function testMessageTranslationWithDomain() {
         Configure::write('Config.language', 'lang');
         App::build(array(
-            'Locale' => array(CakePlugin::path('ParsleyJsHelper') . 'Test' . DS . 'test_files' . DS . 'Locale' . DS)
+            'Locale' => array(CakePlugin::path('ParsleyHelper') . 'Test' . DS . 'test_files' . DS . 'Locale' . DS)
         ));
 
         $Contact = ClassRegistry::getObject('Contact');

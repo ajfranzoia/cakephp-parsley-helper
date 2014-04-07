@@ -17,8 +17,8 @@
  */
 
 App::uses('FormHelper', 'View/Helper');
-App::uses('ParsleyFormHelperTest', 'ParsleyJsHelper.Test/Case/View/Helper');
-App::uses('ParsleyFormTrait', 'ParsleyJsHelper.View/Helper');
+App::uses('ParsleyFormHelperTest', 'ParsleyHelper.Test/Case/View/Helper');
+App::uses('ParsleyFormTrait', 'ParsleyHelper.View/Helper');
 
 class ParsleyFormHelperWithTrait extends FormHelper {
     use ParsleyFormTrait;

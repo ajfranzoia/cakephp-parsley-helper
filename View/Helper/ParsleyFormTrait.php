@@ -1,6 +1,6 @@
 <?php
 
-App::uses('ParsleyProcessor', 'ParsleyJsHelper.Lib');
+App::uses('ParsleyProcessor', 'ParsleyHelper.Lib');
 
 trait ParsleyFormTrait {
     
