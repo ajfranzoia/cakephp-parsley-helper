@@ -17,18 +17,20 @@ Basic usage
 
 2. Load helper in your ```app/Controller/AppController.php```. You can use the classname option if you want to keep your helper alias as "Form".
 
-```php
-// In AppController.php
+	```php
+	// In AppController.php
 
-public $helpers = array('ParsleyHelper.ParsleyForm');
-// or
-public $helpers = array('Form' => array('className' => 'ParsleyHelper.ParsleyForm'));
-```
+	public $helpers = array('ParsleyHelper.ParsleyForm');
+	// or
+	public $helpers = array('Form' => array('className' => 'ParsleyHelper.ParsleyForm'));
+	```
+
 3. Enable Parsley rules integration in any form by setting ```parsley => true``` or ```data-parsley-validate => true``` in Form->create() options array.
 
-```php
-echo $this->Form->create('MyModel', array('parsley' => true));
-```
+	```php
+	echo $this->Form->create('MyModel', array('parsley' => true));
+	```
+	
 4. That's all! When you create an input field, parsley attributes will be set according to the defined validation rules.
 
 Trait usage
