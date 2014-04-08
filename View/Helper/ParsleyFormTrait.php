@@ -61,7 +61,7 @@ trait ParsleyFormTrait {
  * @param array $options
  * @return string
  */
-    public function end($options = null) {
+    public function end($options = null, $secureAttributes = array()) {
         unset($this->_processor);
         return parent::end($options);
     }
