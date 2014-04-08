@@ -25,7 +25,6 @@ trait ParsleyFormTrait {
     public function create($model = null, $options = array()) {
         $this->_processor = new ParsleyProcessor();
         $options = $this->_processor->initialize($this->_getModel($model), $options);
-        $options['escape'] = false;
         return parent::create($model, $options);
     }
 
