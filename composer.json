@@ -1,17 +1,17 @@
 {
 	"name": "codaxis/parsley-helper",
-	"description": "CakePHP Form Helper for Parsley.js automatic integration",
+	"description": "CakePHP Form Helper for Parsley.js automatic validation integration",
 	"type": "cakephp-plugin",
-	"keywords": ["parsley","form","cakephp"],
+	"keywords": ["parsley","form","cakephp","validation"],
 	"homepage": "https://github.com/Codaxis/parsley-helper",
 	"license": "MIT",
 	"authors": [
 		{
 			"name": "augusto-cdxs",
-			"email": "augusto@codaxis.com",
+			"email": "augusto@codaxis.com"
 		}
 	],
 	"require": {
 		"php": ">=5.3.0"
-	},
+	}
 }
