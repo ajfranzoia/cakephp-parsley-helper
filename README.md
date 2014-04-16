@@ -13,7 +13,7 @@ Compatible with Cake 2.x
 Basic usage
 ----------
 
-1. Enable the helper plugin in your app/Config/bootstrap.php by doing ```CakePlugin::load('BoostCake');``` - or just ```CakePlugin::loadAll();```.
+1. Enable the helper plugin in your app/Config/bootstrap.php by doing ```CakePlugin::load('ParsleyHelper');``` - or just ```CakePlugin::loadAll();```.
 
 2. Load helper in your ```app/Controller/AppController.php```. You can use the classname option if you want to keep your helper alias as "Form".
 
