@@ -30,7 +30,7 @@ Basic usage
 	```php
 	echo $this->Form->create('MyModel', array('parsley' => true));
 	```
-	
+
 4. That's all! When you create an input field, parsley attributes will be set according to the defined validation rules.
 
 Trait usage
