@@ -1,4 +1,4 @@
-Parsley.js Helper
+CakePHP Parsley.js Form Helper
 ===========
 
 CakePHP Form Helper for Parsley.js automatic validation integration - v0.9
