@@ -1,5 +1,7 @@
 <?php
 /**
+ * ParsleyProcessor file
+ *
  * Licensed under The MIT License
  * For full copyright and license information, please see the LICENSE.txt
  * Redistributions of files must retain the above copyright notice.
@@ -62,7 +64,7 @@ class ParsleyProcessor {
         $shortcut = $this->_extractOption('parsley', $options);
         $attr = $this->_extractOption('data-parsley-validate', $options);
         $enabled = !empty($attr);
-        
+
         if ($shortcut !== false) {
             $options['data-parsley-validate'] = true;
             if (!is_array($shortcut)) {
@@ -76,7 +78,7 @@ class ParsleyProcessor {
             $enabled = true;
         }
         unset($options['parsley']);
-        
+
         if ($enabled) {
             $this->_enabled = true;
             $options['novalidate'] = true;
@@ -86,7 +88,7 @@ class ParsleyProcessor {
         }
         return $options;
     }
-    
+
 /**
  * Processes input field and adds attributes according to set validation rules.
  * Return array with processed attributes.
@@ -102,13 +104,13 @@ class ParsleyProcessor {
             if (empty($this->_model)) {
                 return $options;
             }
-            
+
             $validator = $this->_model->validator();
             if (!isset($validator[$field])) {
                 return $options;
             }
             $rules = $validator[$field];
-            
+
             $result = $this->_applyParsley($field, $rules, $options);
             return $result;
         }
@@ -117,7 +119,7 @@ class ParsleyProcessor {
 
 /**
  * Adds data-parsley-multiple attribute to date/time inputs.
- * 
+ *
  * @param string $fieldName
  * @param array $attributes
  * @return string
@@ -131,7 +133,7 @@ class ParsleyProcessor {
 
 /**
  * Inspects field rules and adds proper Parsley attributes.
- * 
+ *
  * @param string $field
  * @param array $rules
  * @param array $options
@@ -144,11 +146,11 @@ class ParsleyProcessor {
             $parsleyRule['message'] = 'required';
             $parsleyRules[] = $parsleyRule;
         }
-        
+
         foreach ($rules as $name => $rule) {
             $rule->rule = (array) $rule->rule;
             $ruleName = $rule->rule[0];
-            
+
             $methodName = '_add' . ucfirst($ruleName) . 'Validation';
             if (method_exists($this, $methodName)) {
                 $parsleyRule = $this->$methodName($rule, $options);
@@ -156,19 +158,19 @@ class ParsleyProcessor {
                 $parsleyRules[] = $parsleyRule;
             }
         }
-        
+
         foreach ($parsleyRules as $rule) {
             $attr = $this->_namespace . '-' . $rule['rule'];
-            $options[$attr] = $rule['value'];            
+            $options[$attr] = $rule['value'];
             $options[$attr . '-message'] = $rule['message'];
         }
-        
+
         return $options;
     }
 
 /**
  * Adds required validation.
- * 
+ *
  * @param object $rule
  * @return array
  */
@@ -181,17 +183,17 @@ class ParsleyProcessor {
 
 /**
  * Adds not empty validation.
- * 
+ *
  * @param object $rule
  * @return array
  */
     public function _addNotEmptyValidation($rule) {
         return $this->_addRequiredValidation($rule);
     }
-    
+
 /**
  * Adds alphanumeric validation.
- * 
+ *
  * @param object $rule
  * @return array
  */
@@ -201,17 +203,17 @@ class ParsleyProcessor {
             'value' => 'alphanum',
         );
     }
-     
+
 /**
  * Adds decimal validation.
- * 
+ *
  * @param object $rule
  * @return array
  */
    public function _addDecimalValidation($rule) {
         $places = isset($rule->rule[1]) ? $rule->rule[1] : null;
         $regex = isset($rule->rule[2]) ? $rule->rule[2] : null;
-        
+
         if ($regex === null) {
             $lnum = '[0-9]+';
             $dnum = "[0-9]*[\.]{$lnum}";
@@ -233,16 +235,16 @@ class ParsleyProcessor {
                 $regex = "/^{$sign}{$dnum}{$exp}$/";
             }
         }
-        
+
         return array(
             'rule' => 'pattern',
             'value' => $regex,
         );
     }
-    
+
 /**
  * Adds between validation.
- * 
+ *
  * @param object $rule
  * @return array
  */
@@ -252,10 +254,10 @@ class ParsleyProcessor {
             'value' => sprintf('[%s,%s]', $rule->rule[1], $rule->rule[2]),
         );
     }
-    
+
 /**
  * Adds blank validation.
- * 
+ *
  * @param object $rule
  * @return array
  */
@@ -265,10 +267,10 @@ class ParsleyProcessor {
             'value' => '^\s*$',
         );
     }
-    
+
 /**
  * Adds boolean validation.
- * 
+ *
  * @param object $rule
  * @return array
  */
@@ -278,17 +280,17 @@ class ParsleyProcessor {
             'value' => '^(false|true|0|1)$',
         );
     }
-    
+
 /**
  * Adds comparison validation.
- * 
+ *
  * @param object $rule
  * @return array
  */
     public function _addComparisonValidation($rule) {
         $operator = $rule->rule[1];
         $check2 = $rule->rule[2];
-        
+
         switch ($operator) {
             case 'isgreater':
             case '>':
@@ -321,16 +323,16 @@ class ParsleyProcessor {
                 $value = '^(?!^' . $check2 . '$).*';
                 break;
         }
-        
+
         return array(
             'rule' => $rule,
             'value' => $value,
         );
     }
-    
+
 /**
  * Adds equal to validation.
- * 
+ *
  * @param object $rule
  * @return array
  */
@@ -340,10 +342,10 @@ class ParsleyProcessor {
             'value' => '^' . $check2 . '$',
         );
     }
-    
+
 /**
  * Adds compare fields validation.
- * 
+ *
  * @param object $rule
  * @return array
  */
@@ -353,10 +355,10 @@ class ParsleyProcessor {
             'value' => sprintf('[name=\'data[%s][%s]\']', $modelName, $rule->rule[1]),
         );
     }
-    
+
 /**
  * Adds custom regex validation.
- * 
+ *
  * @param object $rule
  * @return array
  */
@@ -369,7 +371,7 @@ class ParsleyProcessor {
 
 /**
  * Adds date validation.
- * 
+ *
  * @param object $rule
  * @return array
  */
@@ -380,10 +382,10 @@ class ParsleyProcessor {
             'value' => '^' . $this->_getDateRegex($format) . '$',
         );
     }
-    
+
 /**
  * Adds time validation.
- * 
+ *
  * @param object $rule
  * @return array
  */
@@ -392,12 +394,12 @@ class ParsleyProcessor {
             'rule' => 'pattern',
             'value' => '^((0?[1-9]|1[012])(:[0-5]\d){0,2} ?([AP]M|[ap]m))$|^([01]\d|2[0-3])(:[0-5]\d){0,2}$',
         );
-        
+
     }
 
 /**
  * Adds datetime validation.
- * 
+ *
  * @param object $rule
  * @return array
  */
@@ -408,12 +410,12 @@ class ParsleyProcessor {
             'rule' => 'pattern',
             'value' => '^' . $this->_getDateRegex($format) . ' ' . $timeRegex . '$',
         );
-        
+
     }
-    
+
 /**
  * Adds email validation.
- * 
+ *
  * @param object $rule
  * @return array
  */
@@ -423,10 +425,10 @@ class ParsleyProcessor {
             'value' => 'email',
         );
     }
-    
+
 /**
  * Adds ip validation.
- * 
+ *
  * @param object $rule
  * @return array
  */
@@ -449,7 +451,7 @@ class ParsleyProcessor {
 
 /**
  * Adds money validation.
- * 
+ *
  * @param object $rule
  * @return array
  */
@@ -461,16 +463,16 @@ class ParsleyProcessor {
         } else {
             $regex = '/^(?!\u00a2)\$?' . $money . '$/';
         }
-        
+
         return array(
             'rule' => 'pattern',
             'value' => $regex,
         );
     }
-    
+
 /**
  * Adds max length validation.
- * 
+ *
  * @param object $rule
  * @return array
  */
@@ -480,10 +482,10 @@ class ParsleyProcessor {
             'value' => $rule->rule[1],
         );
     }
-    
+
 /**
  * Adds required validation.
- * 
+ *
  * @param object $rule
  * @return array
  */
@@ -493,17 +495,17 @@ class ParsleyProcessor {
             'value' => $rule->rule[1],
         );
     }
-    
+
 /**
  * Adds phone number validation.
- * 
+ *
  * @param object $rule
  * @return array
  */
     public function _addPhoneValidation($rule) {
         $regex = empty($rule->rule[1]) ? null : $rule->rule[1];
         $country = empty($rule->rule[2]) ? 'all' : $rule->rule[2];
-        
+
         if ($regex === null) {
             switch ($country) {
                 case 'us':
@@ -530,23 +532,23 @@ class ParsleyProcessor {
                 break;
             }
         }
-        
+
         return array(
             'rule' => 'pattern',
             'value' => $regex,
         );
     }
-    
+
 /**
  * Adds postal code validation.
- * 
+ *
  * @param object $rule
  * @return array
  */
     public function _addPostalValidation($rule) {
         $regex = empty($rule->rule[1]) ? null : $rule->rule[1];
         $country = empty($rule->rule[2]) ? 'us' : $rule->rule[2];
-        
+
         if ($regex === null) {
             switch ($country) {
                 case 'uk':
@@ -569,16 +571,16 @@ class ParsleyProcessor {
                     break;
             }
         }
-        
+
         return array(
             'rule' => 'pattern',
             'value' => $regex,
         );
     }
-    
+
 /**
  * Adds range validation.
- * 
+ *
  * @param object $rule
  * @return array
  */
@@ -588,17 +590,17 @@ class ParsleyProcessor {
             'value' => sprintf('[%s,%s]', $rule->rule[1], $rule->rule[2]),
         );
     }
-    
+
 /**
  * Adds ssn validation.
- * 
+ *
  * @param object $rule
  * @return array
  */
     public function _addSsnValidation($rule) {
         $regex = $rule->rule[1];
         $country = $rule->rule[2];
-        
+
         if ($regex === null) {
             switch ($country) {
                 case 'dk':
@@ -612,16 +614,16 @@ class ParsleyProcessor {
                     break;
             }
         }
-        
+
         return array(
             'rule' => 'pattern',
             'value' => $regex,
         );
     }
-    
+
 /**
  * Adds url validation.
- * 
+ *
  * @param object $rule
  * @return array
  */
@@ -631,10 +633,10 @@ class ParsleyProcessor {
             'value' => 'url',
         );
     }
-    
+
 /**
  * Adds numeric validation.
- * 
+ *
  * @param object $rule
  * @return array
  */
@@ -644,10 +646,10 @@ class ParsleyProcessor {
             'value' => 'number',
         );
     }
-    
+
 /**
  * Adds natural number validation.
- * 
+ *
  * @param object $rule
  * @return array
  */
@@ -658,10 +660,10 @@ class ParsleyProcessor {
             'value' => $allowZero ? '^(?:0|[1-9][0-9]*)$' : '^[1-9][0-9]*$',
         );
     }
-    
+
 /**
  * Adds uuid validation.
- * 
+ *
  * @param object $rule
  * @return array
  */
@@ -675,7 +677,7 @@ class ParsleyProcessor {
 
 /**
  * Returns date regex based on format.
- * 
+ *
  * @param string $format
  * @return string
  */
@@ -709,13 +711,13 @@ class ParsleyProcessor {
         $regex['my'] = '(' . $month . $separator . $year . ')';
         $regex['ym'] = '(' . $year . $separator . $month . ')';
         $regex['y'] = '(' . $fourDigitYear . ')';
-        
+
         return $regex[$format];
     }
 
 /**
  * Returns rule validation message.
- * 
+ *
  * @param string $name
  * @param object $rule
  * @return string
