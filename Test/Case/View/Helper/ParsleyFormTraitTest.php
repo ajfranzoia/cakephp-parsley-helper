@@ -1,18 +1,14 @@
 <?php
 /**
- * ParsleyFormHelperTest file
- *
- * CakePHP(tm) Tests <http://book.cakephp.org/2.0/en/development/testing.html>
- * Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * ParsleyFormTraitTest file
  *
  * Licensed under The MIT License
  * For full copyright and license information, please see the LICENSE.txt
  * Redistributions of files must retain the above copyright notice
  *
- * @copyright     Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
- * @link          http://book.cakephp.org/2.0/en/development/testing.html CakePHP(tm) Tests
- * @package       Cake.Test.Case.View.Helper
- * @since         CakePHP(tm) v 1.2.0.4206
+ * @copyright     Copyright (c) Codaxis (http://codaxis.com)
+ * @author        augusto-cdxs (https://github.com/augusto-cdxs/
+ * @link          https://github.com/Codaxis/parsley-helper
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
@@ -20,12 +16,16 @@ App::uses('FormHelper', 'View/Helper');
 App::uses('ParsleyFormHelperTest', 'ParsleyHelper.Test/Case/View/Helper');
 App::uses('ParsleyFormTrait', 'ParsleyHelper.View/Helper');
 
+/**
+ * Form helper with trait for testing
+ */
 class ParsleyFormHelperWithTrait extends FormHelper {
     use ParsleyFormTrait;
 }
 
 /**
  * FormHelperTest class
+ * Extends ParsleyFormHelperTest to run same tests.
  */
 class ParsleyFormTraitTest extends ParsleyFormHelperTest {
 
@@ -58,7 +58,7 @@ class ParsleyFormTraitTest extends ParsleyFormHelperTest {
             'minutesRegex' => 'preg:/(?:<option value="([\d]+)">0?\\1<\/option>[\r\n]*)*/',
             'meridianRegex' => 'preg:/(?:<option value="(am|pm)">\\1<\/option>[\r\n]*)*/',
         );
-	
+
 		ClassRegistry::addObject('Contact', new Contact());
 	}
 }

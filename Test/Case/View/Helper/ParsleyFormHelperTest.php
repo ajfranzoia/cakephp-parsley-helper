@@ -2,20 +2,15 @@
 /**
  * ParsleyFormHelperTest file
  *
- * CakePHP(tm) Tests <http://book.cakephp.org/2.0/en/development/testing.html>
- * Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
- *
  * Licensed under The MIT License
  * For full copyright and license information, please see the LICENSE.txt
- * Redistributions of files must retain the above copyright notice
+ * Redistributions of files must retain the above copyright notice.
  *
- * @copyright     Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
- * @link          http://book.cakephp.org/2.0/en/development/testing.html CakePHP(tm) Tests
- * @package       Cake.Test.Case.View.Helper
- * @since         CakePHP(tm) v 1.2.0.4206
+ * @copyright     Copyright (c) Codaxis (http://codaxis.com)
+ * @author        augusto-cdxs (https://github.com/augusto-cdxs/
+ * @link          https://github.com/Codaxis/parsley-helper
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
-
 
 App::uses('ClassRegistry', 'Utility');
 App::uses('Controller', 'Controller');
@@ -29,8 +24,6 @@ App::uses('ParsleyFormHelper', 'ParsleyHelper.View/Helper');
 
 /**
  * ContactTestController class
- *
- * @package       Cake.Test.Case.View.Helper
  */
 class ContactTestController extends Controller {
 
@@ -43,9 +36,7 @@ class ContactTestController extends Controller {
 }
 
 /**
- * Contact class
- *
- * @package       Cake.Test.Case.View.Helper
+ * Contact class for testing
  */
 class Contact extends CakeTestModel {
 
@@ -57,7 +48,7 @@ class Contact extends CakeTestModel {
 	public $useTable = false;
 
 /**
- * validate property
+ * Validation rules
  *
  * @var array
  */
@@ -66,177 +57,177 @@ class Contact extends CakeTestModel {
             'rule' => 'notEmpty',
             'message' => 'Must not be empty!'
         ),
-        
+
         'im_alphanumeric_required' => array(
             'rule' => 'alphaNumeric',
             'message' => 'Not a valid alphanumeric value!'
         ),
-        
+
         'im_alphanumeric' => array(
             'rule' => 'alphaNumeric',
             'message' => 'Not a valid alphanumeric value!',
             'allowEmpty' => true
         ),
-        
+
         'im_between' => array(
             'rule' => array('between', 5, 10),
             'message' => 'Must be between 5 and 10 chars!',
             'allowEmpty' => true
         ),
-        
+
         'im_blank' => array(
             'rule' => 'blank',
             'message' => 'Not a valid blank value!',
-            'allowEmpty' => true, 
+            'allowEmpty' => true,
         ),
-        
+
         'im_boolean' => array(
-            'rule' => 'boolean', 
+            'rule' => 'boolean',
             'message' => 'Not a valid boolean value!',
-            'allowEmpty' => true, 
+            'allowEmpty' => true,
         ),
-        
+
         'im_decimal' => array(
             'rule' => 'decimal',
             'message' => 'Not a valid decimal value!',
             'allowEmpty' => true
         ),
-        
+
         'im_greater_than' => array(
             'rule' => array('comparison', '>', 10),
             'message' => 'Must be greater than 10!',
-            'allowEmpty' => true, 
+            'allowEmpty' => true,
         ),
-        
+
         'im_less_than' => array(
             'rule' => array('comparison', '<', 5),
             'message' => 'Must be less than 5!',
-            'allowEmpty' => true, 
+            'allowEmpty' => true,
         ),
-        
+
         'im_greater_or_equal_than' => array(
             'rule' => array('comparison', '>=', 10),
             'message' => 'Must be greater or equal to 10!',
-            'allowEmpty' => true, 
+            'allowEmpty' => true,
         ),
-        
+
         'im_less_or_equal_than' => array(
             'rule' => array('comparison', '<=', 5),
             'message' => 'Must be less or equal to 5!',
-            'allowEmpty' => true, 
+            'allowEmpty' => true,
         ),
-        
+
         'im_equal_to' => array(
             'rule' => array('comparison', '==', 'WORD'),
             'message' => 'Must be equal to WORD!',
-            'allowEmpty' => true, 
+            'allowEmpty' => true,
         ),
-        
+
         'im_not_equal_to' => array(
             'rule' => array('comparison', '!=', 'WORD'),
             'message' => 'Must be not equal to WORD!',
-            'allowEmpty' => true, 
+            'allowEmpty' => true,
         ),
-        
+
         'im_custom' => array(
             'rule' => array('custom', '^[A-Z][0-9]$'),
             'message' => 'Must match an uppercase letter followed by a digit!',
-            'allowEmpty' => true, 
+            'allowEmpty' => true,
         ),
-        
+
         'im_date' => array(
             'rule' => array('date'),
             'message' => 'Must be a date!',
-            'allowEmpty' => true, 
+            'allowEmpty' => true,
         ),
-        
+
         'im_time' => array(
             'rule' => array('time'),
             'message' => 'Must be a time!',
-            'allowEmpty' => true, 
+            'allowEmpty' => true,
         ),
-        
+
         'im_datetime' => array(
             'rule' => array('datetime'),
             'message' => 'Must be a datetime!',
-            'allowEmpty' => true, 
+            'allowEmpty' => true,
         ),
-        
+
         'im_email' => array(
             'rule' => 'email',
             'message' => 'Not a valid email value!',
-            'allowEmpty' => true, 
+            'allowEmpty' => true,
         ),
-        
+
         'im_ip' => array(
-            'rule' => 'ip', 
+            'rule' => 'ip',
             'message' => 'Not a valid ip value!',
-            'allowEmpty' => true, 
+            'allowEmpty' => true,
         ),
-        
+
         'im_money' => array(
-            'rule' => 'money', 
+            'rule' => 'money',
             'message' => 'Not a valid money value!',
-            'allowEmpty' => true, 
+            'allowEmpty' => true,
         ),
-        
+
         'im_maxlength' => array(
-            'rule' => array('maxLength', 10), 
+            'rule' => array('maxLength', 10),
             'message' => 'Must be less than 10 characters!',
-            'allowEmpty' => true, 
+            'allowEmpty' => true,
         ),
-        
+
         'im_minlength' => array(
-            'rule' => array('minLength', 5), 
+            'rule' => array('minLength', 5),
             'message' => 'Must be more than 5 characters!',
-            'allowEmpty' => true, 
+            'allowEmpty' => true,
         ),
-        
+
         'im_phone' => array(
-            'rule' => array('phone'), 
+            'rule' => array('phone'),
             'message' => 'Not a valid phone value!',
-            'allowEmpty' => true, 
+            'allowEmpty' => true,
         ),
-        
+
         'im_postal' => array(
-            'rule' => array('postal'), 
+            'rule' => array('postal'),
             'message' => 'Not a valid postal value!',
-            'allowEmpty' => true, 
+            'allowEmpty' => true,
         ),
-        
+
         'im_range' => array(
-            'rule' => array('range', 5, 10), 
+            'rule' => array('range', 5, 10),
             'message' => 'Not a valid value in the range [5,10]!',
-            'allowEmpty' => true, 
+            'allowEmpty' => true,
         ),
-        
+
         'im_url' => array(
-            'rule' => array('url'), 
+            'rule' => array('url'),
             'message' => 'Not a valid URL value!',
-            'allowEmpty' => true, 
+            'allowEmpty' => true,
         ),
-        
+
         'im_numeric' => array(
-            'rule' => array('numeric'), 
+            'rule' => array('numeric'),
             'message' => 'Not a valid numeric value!',
-            'allowEmpty' => true, 
+            'allowEmpty' => true,
         ),
-        
+
         'im_natural_number' => array(
-            'rule' => array('naturalNumber'), 
+            'rule' => array('naturalNumber'),
             'message' => 'Not a valid natural number value!',
-            'allowEmpty' => true, 
+            'allowEmpty' => true,
         ),
-        
+
         'im_uuid' => array(
-            'rule' => array('uuid'), 
+            'rule' => array('uuid'),
             'message' => 'Not a valid UUID value!',
-            'allowEmpty' => true, 
+            'allowEmpty' => true,
         ),
 
         'im_multiple' => array(
             'rule1' => array(
-                'rule' => array('numeric'), 
+                'rule' => array('numeric'),
                 'message' => 'Not a valid numeric value!',
                 'allowEmpty' => true,
             ),
@@ -248,7 +239,7 @@ class Contact extends CakeTestModel {
         ),
 
         'im_default_message' => array(
-            'rule' => array('notEmpty'), 
+            'rule' => array('notEmpty'),
         ),
 
         'im_rule_name_message' => array(
@@ -258,7 +249,7 @@ class Contact extends CakeTestModel {
         ),
 
         'im_translated' => array(
-            'rule' => array('notEmpty'), 
+            'rule' => array('notEmpty'),
             'message' => 'Not localized error message.',
         ),
     );
@@ -298,7 +289,7 @@ class ParsleyFormHelperTest extends CakeTestCase {
             'minutesRegex' => 'preg:/(?:<option value="([\d]+)">0?\\1<\/option>[\r\n]*)*/',
             'meridianRegex' => 'preg:/(?:<option value="(am|pm)">\\1<\/option>[\r\n]*)*/',
         );
-	
+
 		ClassRegistry::addObject('Contact', new Contact());
 	}
 
@@ -331,7 +322,7 @@ class ParsleyFormHelperTest extends CakeTestCase {
             '/div'
         );
         $this->assertTags($result, $expected);
-        
+
         $result = $this->Form->create('Contact', array(
             'parsley' => true
         ));
@@ -355,14 +346,14 @@ class ParsleyFormHelperTest extends CakeTestCase {
         $this->Form->create('Contact', array(
             'parsley' => true
         ));
-        
+
         $result = $this->Form->text('im_not_empty');
         $expected = array(
             'input' => array(
                 'name' => 'data[Contact][im_not_empty]',
                 'type' => 'text',
                 'id' => 'ContactImNotEmpty',
-                'required' => 'required', 
+                'required' => 'required',
                 'data-parsley-required' => 'true',
                 'data-parsley-required-message' => 'Must not be empty!',
             ),
@@ -377,7 +368,7 @@ class ParsleyFormHelperTest extends CakeTestCase {
         $this->Form->create('Contact', array(
             'parsley' => true
         ));
-        
+
         $result = $this->Form->text('im_alphanumeric_required');
         $expected = array(
             'input' => array(
@@ -401,7 +392,7 @@ class ParsleyFormHelperTest extends CakeTestCase {
         $this->Form->create('Contact', array(
             'parsley' => true
         ));
-        
+
         $result = $this->Form->text('im_alphanumeric');
         $expected = array(
             'input' => array(
@@ -422,7 +413,7 @@ class ParsleyFormHelperTest extends CakeTestCase {
         $this->Form->create('Contact', array(
             'parsley' => true
         ));
-        
+
         $result = $this->Form->text('im_between');
         $expected = array(
             'input' => array(
@@ -443,7 +434,7 @@ class ParsleyFormHelperTest extends CakeTestCase {
         $this->Form->create('Contact', array(
             'parsley' => true
         ));
-        
+
         $result = $this->Form->text('im_blank');
         $expected = array(
             'input' => array(
@@ -464,7 +455,7 @@ class ParsleyFormHelperTest extends CakeTestCase {
         $this->Form->create('Contact', array(
             'parsley' => true
         ));
-        
+
         $result = $this->Form->text('im_boolean');
         $expected = array(
             'input' => array(
@@ -485,7 +476,7 @@ class ParsleyFormHelperTest extends CakeTestCase {
         $this->Form->create('Contact', array(
             'parsley' => true
         ));
-        
+
         $result = $this->Form->text('im_decimal');
         $expected = array(
             'input' => array(
@@ -506,7 +497,7 @@ class ParsleyFormHelperTest extends CakeTestCase {
         $this->Form->create('Contact', array(
             'parsley' => true
         ));
-        
+
         $result = $this->Form->text('im_greater_than');
         $expected = array(
             'input' => array(
@@ -518,7 +509,7 @@ class ParsleyFormHelperTest extends CakeTestCase {
             ),
         );
         $this->assertTags($result, $expected);
-        
+
         $result = $this->Form->text('im_less_than');
         $expected = array(
             'input' => array(
@@ -530,7 +521,7 @@ class ParsleyFormHelperTest extends CakeTestCase {
             ),
         );
         $this->assertTags($result, $expected);
-        
+
         $result = $this->Form->text('im_greater_or_equal_than');
         $expected = array(
             'input' => array(
@@ -542,7 +533,7 @@ class ParsleyFormHelperTest extends CakeTestCase {
             ),
         );
         $this->assertTags($result, $expected);
-        
+
         $result = $this->Form->text('im_less_or_equal_than');
         $expected = array(
             'input' => array(
@@ -554,7 +545,7 @@ class ParsleyFormHelperTest extends CakeTestCase {
             ),
         );
         $this->assertTags($result, $expected);
-        
+
         $result = $this->Form->text('im_equal_to');
         $expected = array(
             'input' => array(
@@ -566,7 +557,7 @@ class ParsleyFormHelperTest extends CakeTestCase {
             ),
         );
         $this->assertTags($result, $expected);
-        
+
         $result = $this->Form->text('im_not_equal_to');
         $expected = array(
             'input' => array(
@@ -587,7 +578,7 @@ class ParsleyFormHelperTest extends CakeTestCase {
         $this->Form->create('Contact', array(
             'parsley' => true
         ));
-        
+
         $result = $this->Form->text('im_custom');
         $expected = array(
             'input' => array(
@@ -608,7 +599,7 @@ class ParsleyFormHelperTest extends CakeTestCase {
         $this->Form->create('Contact', array(
             'parsley' => true
         ));
-        
+
         $result = $this->Form->text('im_date');
         $expected = array(
             'input' => array(
@@ -629,7 +620,7 @@ class ParsleyFormHelperTest extends CakeTestCase {
         $this->Form->create('Contact', array(
             'parsley' => true
         ));
-        
+
         $result = $this->Form->text('im_time');
         $expected = array(
             'input' => array(
@@ -650,7 +641,7 @@ class ParsleyFormHelperTest extends CakeTestCase {
         $this->Form->create('Contact', array(
             'parsley' => true
         ));
-        
+
         $result = $this->Form->text('im_datetime');
         $expected = array(
             'input' => array(
@@ -671,7 +662,7 @@ class ParsleyFormHelperTest extends CakeTestCase {
         $this->Form->create('Contact', array(
             'parsley' => true
         ));
-        
+
         $result = $this->Form->text('im_email');
         $expected = array(
             'input' => array(
@@ -692,7 +683,7 @@ class ParsleyFormHelperTest extends CakeTestCase {
         $this->Form->create('Contact', array(
             'parsley' => true
         ));
-        
+
         $result = $this->Form->text('im_ip');
         $expected = array(
             'input' => array(
@@ -713,7 +704,7 @@ class ParsleyFormHelperTest extends CakeTestCase {
         $this->Form->create('Contact', array(
             'parsley' => true
         ));
-        
+
         $result = $this->Form->text('im_money');
         $expected = array(
             'input' => array(
@@ -767,7 +758,7 @@ class ParsleyFormHelperTest extends CakeTestCase {
         $this->Form->create('Contact', array(
             'parsley' => true
         ));
-        
+
         $result = $this->Form->text('im_phone');
         $expected = array(
             'input' => array(
@@ -788,7 +779,7 @@ class ParsleyFormHelperTest extends CakeTestCase {
         $this->Form->create('Contact', array(
             'parsley' => true
         ));
-        
+
         $result = $this->Form->text('im_postal');
         $expected = array(
             'input' => array(
@@ -809,7 +800,7 @@ class ParsleyFormHelperTest extends CakeTestCase {
         $this->Form->create('Contact', array(
             'parsley' => true
         ));
-        
+
         $result = $this->Form->text('im_url');
         $expected = array(
             'input' => array(
@@ -830,7 +821,7 @@ class ParsleyFormHelperTest extends CakeTestCase {
         $this->Form->create('Contact', array(
             'parsley' => true
         ));
-        
+
         $result = $this->Form->text('im_uuid');
         $expected = array(
             'input' => array(
@@ -851,7 +842,7 @@ class ParsleyFormHelperTest extends CakeTestCase {
         $this->Form->create('Contact', array(
             'parsley' => true
         ));
-        
+
         $result = $this->Form->text('im_numeric');
         $expected = array(
             'input' => array(
@@ -872,7 +863,7 @@ class ParsleyFormHelperTest extends CakeTestCase {
         $this->Form->create('Contact', array(
             'parsley' => true
         ));
-        
+
         $result = $this->Form->text('im_natural_number');
         $expected = array(
             'input' => array(
@@ -893,7 +884,7 @@ class ParsleyFormHelperTest extends CakeTestCase {
         $this->Form->create('Contact', array(
             'parsley' => true
         ));
-        
+
         $result = $this->Form->text('im_range');
         $expected = array(
             'input' => array(
@@ -1073,7 +1064,7 @@ class ParsleyFormHelperTest extends CakeTestCase {
                 'name' => 'data[Contact][im_translated]',
                 'type' => 'text',
                 'id' => 'ContactImTranslated',
-                'required' => 'required', 
+                'required' => 'required',
                 'data-parsley-required' => 'true',
                 'data-parsley-required-message' => 'Localized error message with validation domain.',
             ),

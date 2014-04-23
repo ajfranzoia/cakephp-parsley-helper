@@ -7,7 +7,6 @@
  * @copyright     Copyright (c) Codaxis (http://codaxis.com)
  * @author        augusto-cdxs (https://github.com/augusto-cdxs/
  * @link          https://github.com/Codaxis/parsley-helper ParsleyHelper
- * @package       ParsleyHelper.View.Helper
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
@@ -15,6 +14,9 @@ App::uses('FormHelper', 'View/Helper');
 App::uses('Set', 'Utility');
 App::uses('ParsleyProcessor', 'ParsleyHelper.Lib');
 
+/**
+ * Parsley Helper class
+ */
 class ParsleyFormHelper extends FormHelper {
 
 /**
@@ -26,14 +28,14 @@ class ParsleyFormHelper extends FormHelper {
 
 /**
  * ParsleyProcessor object
- * 
+ *
  * @var object
  */
     protected $_processor = null;
- 
+
 /**
  * Runs ParsleyProcessor initialize method with current form.
- * 
+ *
  * @param mixed $model
  * @param array $options
  * @return string
@@ -46,7 +48,7 @@ class ParsleyFormHelper extends FormHelper {
 
 /**
  * Adds Parsley data attributes to field options if Parsley is enabled
- * 
+ *
  * @param string $field
  * @param array $options
  * @return array
@@ -59,7 +61,7 @@ class ParsleyFormHelper extends FormHelper {
 
 /**
  * Calls ParsleyProcessor::processDatetimeInput() to apply data-parsley-multiple on date inputs
- * 
+ *
  * @param string $fieldName
  * @param string $dateFormat
  * @param string $timeFormat
@@ -70,10 +72,10 @@ class ParsleyFormHelper extends FormHelper {
         $attributes = $this->_processor->processDatetimeInput($fieldName, $attributes);
         return parent::dateTime($fieldName, $dateFormat, $timeFormat, $attributes);
     }
-    
+
 /**
  * Unsets Parsley processor.
- * 
+ *
  * @param array $options
  * @return string
  */

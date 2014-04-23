@@ -6,7 +6,7 @@
  *
  * @copyright     Copyright (c) Codaxis (http://codaxis.com)
  * @author        augusto-cdxs (https://github.com/augusto-cdxs/
- * @link          https://github.com/Codaxis/parsley-helper ParsleyHelper
+ * @link          https://github.com/Codaxis/parsley-helper
  * @package       ParsleyHelper.Lib
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
