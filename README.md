@@ -5,7 +5,9 @@ CakePHP Form Helper for Parsley.js automatic validation integration - v0.9
 
 This helper will automatically read validation rules from active form model and assign field attributes accordingly.
 
-Compatible with Cake 2.x
+Compatible with Cake 2.4.7+
+
+Feel free to make any code/docs contributions or post any issues.
 
 [![Build Status](https://travis-ci.org/Codaxis/parsley-helper.svg?branch=master)](https://travis-ci.org/Codaxis/parsley-helper)
 
