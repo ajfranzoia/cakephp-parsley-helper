@@ -1,5 +1,5 @@
 {
-	"name": "codaxis/parsley-helper",
+	"name": "codaxis/cakephp-parsley-helper",
 	"description": "CakePHP Form Helper for Parsley.js automatic validation integration",
 	"type": "cakephp-plugin",
 	"keywords": ["parsley","form","cakephp","validation"],
