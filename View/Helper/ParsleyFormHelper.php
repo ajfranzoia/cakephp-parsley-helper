@@ -54,10 +54,17 @@ class ParsleyFormHelper extends FormHelper {
  * @return array
  */
     protected function _initInputField($field, $options = array()) {
-        $result = parent::_initInputField($field, $options);
-        $result = $this->_processor->processInput($field, $result, $this->requestType === 'put');
-        return $result;
+      if (in_array($field, ['_Token.unlocked', '_Token.key', '_Token.fields'])){
+        return parent::_initInputField($field, $options);
+      }else{
+        if (is_object($this->_processor)){
+          $result = parent::_initInputField($field, $options);
+          $result = $this->_processor->processInput($field, $result, $this->requestType === 'put');
+          return $result;
+        }
+      }
     }
+
 
 /**
  * Calls ParsleyProcessor::processDatetimeInput() to apply data-parsley-multiple on date inputs
