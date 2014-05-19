@@ -301,7 +301,45 @@ class ParsleyFormHelperTest extends CakeTestCase {
 	public function tearDown() {
 		parent::tearDown();
 		unset($this->Form->Html, $this->Form, $this->Controller, $this->View);
-		//Configure::write('Security.salt', $this->oldSalt);
+	}
+
+/**
+ * testWithSecurity method
+ *
+ * @return void
+ */
+	public function testWithSecurity() {
+		$this->Form->request['_Token'] = array('key' => 'testKey');
+		$encoding = strtolower(Configure::read('App.encoding'));
+		$result = $this->Form->create('Contact', array('url' => '/contacts/add'));
+		$expected = array(
+			'form' => array('action' => '/contacts/add',
+				'data-parsley-validate' => 1, 'novalidate' => 'novalidate',
+				'id' => 'ContactAddForm', 'method' => 'post', 'accept-charset' => $encoding,
+			),
+			'div' => array('style' => 'display:none;'),
+			array('input' => array('type' => 'hidden', 'name' => '_method', 'value' => 'POST')),
+			array('input' => array(
+				'type' => 'hidden', 'name' => 'data[_Token][key]', 'value' => 'testKey', 'id'
+			)),
+			'/div'
+		);
+		$this->assertTags($result, $expected);
+
+		$result = $this->Form->end();
+		$expected = array(
+			'div' => array('style' => 'display:none;'),
+			array('input' => array(
+				'type' => 'hidden', 'name' => 'data[_Token][fields]',
+				'value' => 'preg:/.+/', 'id' => 'preg:/TokenFields\d+/'
+			)),
+			array('input' => array(
+				'type' => 'hidden', 'name' => 'data[_Token][unlocked]',
+				'value' => '', 'id' => 'preg:/TokenUnlocked\d+/'
+			)),
+			'/div'
+		);
+		$this->assertTags($result, $expected);
 	}
 
 /**

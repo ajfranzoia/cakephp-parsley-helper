@@ -39,6 +39,9 @@ trait ParsleyFormTrait {
  */
     protected function _initInputField($field, $options = array()) {
         $result = parent::_initInputField($field, $options);
+    	if (!isset($this->_processor)) {
+    		return $result;
+    	}
         $result = $this->_processor->processInput($field, $result, $this->requestType === 'put');
         return $result;
     }
@@ -53,7 +56,9 @@ trait ParsleyFormTrait {
  * @return string
  */
     public function dateTime($fieldName, $dateFormat = 'DMY', $timeFormat = '12', $attributes = array()) {
-        $attributes = $this->_processor->processDatetimeInput($fieldName, $attributes);
+    	if (isset($this->_processor)) {
+    		$attributes = $this->_processor->processDatetimeInput($fieldName, $attributes);
+    	}
         return parent::dateTime($fieldName, $dateFormat, $timeFormat, $attributes);
     }
 
@@ -64,7 +69,8 @@ trait ParsleyFormTrait {
  * @return string
  */
     public function end($options = null, $secureAttributes = array()) {
+    	$end = parent::end($options);
         unset($this->_processor);
-        return parent::end($options);
+        return $end;
     }
 }
