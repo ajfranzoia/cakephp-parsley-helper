@@ -40,10 +40,10 @@ class ParsleyFormHelper extends FormHelper {
  * @param array $options
  * @return string
  */
-    public function create($model = null, $options = array()) {
+    protected function _beforeCreate($model, $options) {
         $this->_processor = new ParsleyProcessor();
         $options = $this->_processor->initialize($this->_getModel($model), $options);
-        return parent::create($model, $options);
+        return $options;
     }
 
 /**
