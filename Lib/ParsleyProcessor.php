@@ -23,32 +23,49 @@ class ParsleyProcessor {
     protected $_enabled = false;
 
 /**
+ * Current form model
+ *
+ * @var string
+ */
+    protected $_model = null;
+
+/**
  * Namespace
  *
  * @var string
  */
-    protected $_namespace = null;
+    protected $_options = null;
 
 /**
- * Priority enabled
+ * Default options
  *
- * @var boolean
+ * @var array
  */
-    protected $_priorityEnabled = null;
+    protected $_defaults = array(
+        'enable' => false,
+        'novalidate' => true,
+        'namespace' => null,
+        'errorClass' => null,
+        'successClass' => null,
+        'errorsWrapper' => null,
+        'priorityEnabled' => null,
+        'excluded' => null,
+    );
 
 /**
- * Excluded fields from validation
+ * Attr mapping
  *
- * @var string
+ * @var array
  */
-    protected $_excluded = null;
-
-/**
- * Current form model
- *
- * @var object
- */
-    protected $_model = null;
+    protected $_attrMapping = array(
+        'data-parsley-namespace' => 'namespace',
+        'data-parsley-error-class' => 'errorClass',
+        'data-parsley-success-class' => 'successClass',
+        'data-parsley-errors-wrapper' => 'errorsWrapper',
+        'data-parsley-priority-enabled' => 'priorityEnabled',
+        'data-parsley-excluded' => 'excluded',
+        'novalidate' => 'novalidate'
+    );
 
 /**
  * Checks if Parsley is enabled and initializes current form options.
@@ -58,35 +75,55 @@ class ParsleyProcessor {
  * @param array $options
  * @return array
  */
-    public function initialize($model, $options) {
-        $this->_model  = $model;
+    public function initialize($formModel, $formOptions) {
 
-        $shortcut = $this->_extractOption('parsley', $options);
-        $attr = $this->_extractOption('data-parsley-validate', $options);
-        $enabled = !empty($attr);
+        $enableShortcut = $this->_extractOption('parsley', $formOptions);
+        $enableAttr = $this->_extractOption('data-parsley-validate', $formOptions);
 
-        if ($shortcut !== false) {
-            $options['data-parsley-validate'] = true;
-            if (!is_array($shortcut)) {
-                $shortcut = array();
+        $this->_enabled = $enableShortcut || $enableAttr;
+
+        if ($this->_enabled) {
+            $this->_model  = $formModel;
+            $this->_options = $this->_defaults;
+
+            $optionsToAttr = array_flip($this->_attrMapping);
+            $shortcutAttrs = array_map(function($val) {
+                return 'parsley' . ucfirst($val);
+            }, $this->_attrMapping);
+            $shortcutAttrMapping = array_flip($shortcutAttrs);
+
+            foreach ($formOptions as $attr => $value) {
+                if (in_array($attr, $optionsToAttr)) {
+                    $this->_options[$this->_attrMapping[$attr]] = $value;
+                } elseif (in_array($attr, $shortcutAttrs)) {
+                    $this->_options[$this->_attrMapping[$shortcutAttrMapping[$attr]]] = $value;
+                }
             }
-            $options['data-parsley-error-class'] = $this->_extractOption('data-parsley-namespace', $options);
-            $options['data-parsley-error-class'] = $this->_extractOption('errorClass', $shortcut);
-            $options['data-parsley-success-class'] = $this->_extractOption('successClass', $shortcut);
-            $options['data-parsley-errors-wrapper'] = $this->_extractOption('errorsWrapper', $shortcut);
-            $options['data-parsley-validate'] = true;
-            $enabled = true;
-        }
-        unset($options['parsley']);
 
-        if ($enabled) {
-            $this->_enabled = true;
-            $options['novalidate'] = true;
-            $this->_namespace = $this->_extractOption('data-parsley-namespace', $options, 'data-parsley');
-            $this->_priorityEnabled = $this->_extractOption('data-parsley-priority-enabled', $options);
-            $this->_excluded = $this->_extractOption('data-parsley-excluded', $options);
+            foreach ($this->_options as $key => $value) {
+                if ($value !== null && isset($optionsToAttr[$key])) {
+                    $formOptions[$optionsToAttr[$key]] = $value;
+                }
+            }
+
+            $formOptions['data-parsley-validate'] = true;
         }
-        return $options;
+        unset($formOptions['parsley']);
+
+        return $formOptions;
+    }
+
+/**
+ * Return current namespace.
+ *
+ * @return string
+ */
+    public function getNamespace() {
+        if ($this->_options['namespace'] === null) {
+            return 'data-parsley-';
+        }
+
+        return $this->_options['namespace'];
     }
 
 /**
@@ -126,7 +163,7 @@ class ParsleyProcessor {
  */
     public function processDatetimeInput($fieldName, $attributes) {
         if ($this->_enabled) {
-            $attributes[$this->_namespace . '-multiple'] = strtolower(Inflector::slug($this->_model->name . ' ' . $fieldName));
+            $attributes[$this->getNamespace() . 'multiple'] = strtolower(Inflector::slug($this->_model->name . ' ' . $fieldName));
         }
         return $attributes;
     }
@@ -160,7 +197,7 @@ class ParsleyProcessor {
         }
 
         foreach ($parsleyRules as $rule) {
-            $attr = $this->_namespace . '-' . $rule['rule'];
+            $attr = $this->getNamespace() . $rule['rule'];
             $options[$attr] = $rule['value'];
             $options[$attr . '-message'] = $rule['message'];
         }
