@@ -761,7 +761,7 @@ class ParsleyProcessor {
  */
     protected function _getValidationMessage($name, $rule) {
         $validationDomain = $this->_model->validationDomain;
-        $message = $rule->message;
+        $originalMessage = $message = $rule->message;
 
         if ($message !== null) {
             $args = null;
@@ -783,6 +783,7 @@ class ParsleyProcessor {
 
             $message = __d($validationDomain, $result, $args);
         } elseif (is_string($name)) {
+        	$originalMessage = $name;
             if (is_array($rule->rule)) {
                 $args = array_slice($rule->rule, 1);
 
@@ -798,6 +799,11 @@ class ParsleyProcessor {
             }
         } else {
             $message = __d('cake', 'This field cannot be left blank');
+        }
+
+        // Fallback
+        if ($originalMessage == $message) {
+            $message = __($name);
         }
 
         return $message;
