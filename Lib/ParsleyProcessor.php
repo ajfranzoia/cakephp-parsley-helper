@@ -180,7 +180,7 @@ class ParsleyProcessor {
         $parsleyRules = array();
         if ($this->_isRequiredField($rules)) {
             $parsleyRule = $this->_addRequiredValidation(null, $options);
-            $parsleyRule['message'] = 'required';
+            $parsleyRule['message'] = __('required');
             $parsleyRules[] = $parsleyRule;
         }
 
