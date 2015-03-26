@@ -1,6 +1,8 @@
 CakePHP Parsley.js Form Helper
 ===========
 
+**DEPRECATION WARNING:** This plugin is not maintained anymore.
+
 CakePHP Form Helper for Parsley.js automatic validation integration
 
 This helper will automatically read validation rules from active form model and assign field attributes accordingly.
