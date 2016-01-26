@@ -11,8 +11,6 @@ Compatible with Cake 2.4.7+
 
 Feel free to make any code/docs contributions or post any issues.
 
-[![Build Status](https://travis-ci.org/Codaxis/cakephp-parsley-helper.svg?branch=master)](https://travis-ci.org/Codaxis/parsley-helper)
-
 
 Basic usage
 ----------
